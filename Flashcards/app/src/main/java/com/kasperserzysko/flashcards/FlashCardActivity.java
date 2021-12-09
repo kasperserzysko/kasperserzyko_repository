@@ -5,28 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Space;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.flexbox.FlexboxLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Random;
 
@@ -38,6 +31,7 @@ public class FlashCardActivity extends AppCompatActivity {
     EditText edt_answer;
     Button btn_check;
     ArrayList<Character> arr_content = new ArrayList<>();
+    ArrayList<Integer> arr_ids_work = Util.workIDS();
 
     @SuppressLint("UseCompatLoadingForDrawables")
     @Override
@@ -54,13 +48,14 @@ public class FlashCardActivity extends AppCompatActivity {
         getFlashcard();
 
        btn_check.setOnClickListener(v -> {
-           Toast.makeText(this, createContent(), Toast.LENGTH_SHORT).show();
+           Toast.makeText(this, String.valueOf(arr_ids_work.size()), Toast.LENGTH_SHORT).show();
            if (answerCheck()) {
                flexbox.removeAllViews();
                getFlashcard();
                arr_content.clear();
                edt_answer.setText("");
            }
+
        });
 
     }
@@ -70,6 +65,7 @@ public class FlashCardActivity extends AppCompatActivity {
         //CREATING CHAR LIST FROM STRING
         char[] chrl_content = content.toUpperCase(Locale.ROOT).toCharArray();
 
+        //CONTENT OF OUR FLASHCARD
         for( char i : chrl_content){
             arr_content.add(i);
         }
@@ -127,23 +123,17 @@ public class FlashCardActivity extends AppCompatActivity {
         createSpace();
     }
 
+
     //TEXT VIEW WITH POLISH TRANSLATION
     private void changeTranslate(TextView view, String translation){
         view.setText(translation);
     }
     private String createContent(){
-        //while (arr_content.isEmpty()){
-        //    try {
-        //        wait();
-        //    } catch (InterruptedException e) {
-        //        e.printStackTrace();
-         //   }
-       // }
+
         StringBuilder builder = new StringBuilder();
         for(char i : arr_content){
             builder.append(i);
         }
-
 
         return builder.toString();
     }
@@ -152,35 +142,42 @@ public class FlashCardActivity extends AppCompatActivity {
 
         String answer = edt_answer.getText().toString().toLowerCase();
 
-        if(createContent().toLowerCase(Locale.ROOT).equals(answer)){
-            Toast.makeText(this, createContent(), Toast.LENGTH_SHORT).show();
-
-            return true;
-        }else {
-            Toast.makeText(this, createContent(), Toast.LENGTH_SHORT).show();
-            return false;
-        }
+        return createContent().toLowerCase(Locale.ROOT).equals(answer);
     }
 
-    public void getFlashcard(){
+    public void getFlashcard() {
 
         Random random = new Random();
-        String randomNumber = String.valueOf(random.nextInt(3));
+        int value;
+
+        if (arr_ids_work.size() == 1) {
+            value = arr_ids_work.get(random.nextInt(arr_ids_work.size()));
+            arr_ids_work.remove((Integer) value);
+            getContent(value);
+        } else if (arr_ids_work.size() == 0) {
+
+            //WARUNEK UKONCZENIA GRUPY FISZEK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            Toast.makeText(this, "GRATULACJE", Toast.LENGTH_SHORT).show();
+        } else {
+            value = arr_ids_work.get(random.nextInt(arr_ids_work.size() - 1));
+            arr_ids_work.remove((Integer) value);
+            getContent(value);
+        }
+
+    }
+
+        private void getContent(int value){
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference(randomNumber);
+        DatabaseReference myRef = database.getReference(String.valueOf(value));
 
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Flashcard flashcard = snapshot.getValue(Flashcard.class);
-                createFlashcard(view_translate, flashcard.getContent(), flashcard.getTranslation());
+                if (flashcard != null) {
+                    createFlashcard(view_translate, flashcard.getContent(), flashcard.getTranslation());
+                }
 
-                if( flashcard == null ) {
-                    System.out.println("No messages");
-                }
-                else {
-                    System.out.println("The first message is: " + flashcard.getContent() );
-                }
             }
 
             @Override
