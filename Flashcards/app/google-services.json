@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "375181449243",
+    "firebase_url": "https://fiszkiang-6c2b4-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fiszkiang-6c2b4",
+    "storage_bucket": "fiszkiang-6c2b4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375181449243:android:8c895d7647a3ab791b00be",
+        "android_client_info": {
+          "package_name": "com.kasperserzysko.flashcards"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375181449243-k18tll6un5350u8a88h54qdbiao63c4o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCACol-0OFkNvuwTp8batewu4hLA6gza_o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375181449243-k18tll6un5350u8a88h54qdbiao63c4o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
